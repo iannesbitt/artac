@@ -1,0 +1,119 @@
+{
+    "20170725-kingsbury": {
+        "gain": 600,
+        "flist": [3,4,5,6,7,8,9,10,11,12,13,14],
+        "path": "/home/iannesbitt/MASTERS/fieldwork",
+        "subdir": "working/gpr",
+        "out": "/home/iannesbitt/MASTERS/writing/umaine-thesis/figures/appa",
+        "date": "2017-07-25",
+        "location": "Kingsbury Pond (Kingsbury Plantation, ME)"
+    },
+    "20180303-kingsbury": {
+        "gain": 10,
+        "flist": [7,8],
+        "path": "/home/iannesbitt/MASTERS/fieldwork",
+        "subdir": "working/gpr",
+        "out": "/home/iannesbitt/MASTERS/writing/umaine-thesis/figures/appa",
+        "date": "2018-03-03",
+        "location": "Kingsbury Pond, Kingsbury Plantation, ME"
+    },
+    "20190309-mayfield": {
+        "gain": 10,
+        "flist": [6,7,8,9,10,11,12,13,14],
+        "path": "/home/iannesbitt/MASTERS/fieldwork",
+        "subdir": "working/gpr",
+        "out": "/home/iannesbitt/MASTERS/writing/umaine-thesis/figures/appa",
+        "date": "2019-03-09",
+        "location": "Mayfield Pond, Mayfield Corner, ME"
+    },
+    "20171001-llp": {
+        "gain": 100,
+        "flist": [65,66,67,68,69,70,71,72],
+        "path": "/home/iannesbitt/MASTERS/fieldwork",
+        "subdir": "working/gpr",
+        "out": "/home/iannesbitt/MASTERS/writing/umaine-thesis/figures/appa",
+        "date": "2017-10-01",
+        "location": "Little Long Pond, Seal Harbor, ME"
+    },
+    "20171001-tarn": {
+        "gain": 600,
+        "flist": [53,54,55,56,57,58,59,60,61,62,63,64],
+        "path": "/home/iannesbitt/MASTERS/fieldwork",
+        "subdir": "working/gpr",
+        "out": "/home/iannesbitt/MASTERS/writing/umaine-thesis/figures/appa",
+        "date": "2017-10-01",
+        "location": "The Tarn, Bar Harbor, ME"
+    },
+    "20171001-mud": {
+        "gain": 100,
+        "flist": [74,75,76],
+        "path": "/home/iannesbitt/MASTERS/fieldwork",
+        "subdir": "working/gpr",
+        "out": "/home/iannesbitt/MASTERS/writing/umaine-thesis/figures/appa",
+        "date": "2017-10-01",
+        "location": "Mud Pond, Old Town, ME"
+    },
+    "20180208-cariboubog": {
+        "gain": 100,
+        "flist": [77,78,79],
+        "path": "/home/iannesbitt/MASTERS/fieldwork",
+        "subdir": "working/gpr",
+        "out": "/home/iannesbitt/MASTERS/writing/umaine-thesis/figures/appa",
+        "date": "2018-02-08",
+        "location": "Caribou Bog, Old Town, ME"
+    },
+    "20180209-schoonerhead": {
+        "gain": 600,
+        "flist": [1,2,3,4,5,6,7,8],
+        "path": "/home/iannesbitt/MASTERS/fieldwork",
+        "subdir": "working/gpr",
+        "out": "/home/iannesbitt/MASTERS/writing/umaine-thesis/figures/appa",
+        "date": "2018-02-09",
+        "location": "Schooner Head Meadow, Bar Harbor, ME"
+    },
+    "20180209-tarn": {
+        "gain": 10,
+        "flist": [80,81,82,83,84,85,86,87,88,89,90,91],
+        "path": "/home/iannesbitt/MASTERS/fieldwork",
+        "subdir": "working/gpr",
+        "out": "/home/iannesbitt/MASTERS/writing/umaine-thesis/figures/appa",
+        "date": "2018-02-09",
+        "location": "The Tarn, Bar Harbor, ME"
+    },
+    "20170803-bear": {
+        "gain": 100,
+        "flist": [12,13,14,15,16,17,18,19,20],
+        "path": "/home/iannesbitt/MASTERS/fieldwork",
+        "subdir": "working/gpr",
+        "out": "/home/iannesbitt/MASTERS/writing/umaine-thesis/figures/appa",
+        "date": "2017-08-03",
+        "location": "Bear Pond, East Hancock, ME"
+    },
+    "20170803-schoodic": {
+        "gain": 600,
+        "flist": [21,22,23,24,25,26,27,28],
+        "path": "/home/iannesbitt/MASTERS/fieldwork",
+        "subdir": "working/gpr",
+        "out": "/home/iannesbitt/MASTERS/writing/umaine-thesis/figures/appa",
+        "date": "2017-08-03",
+        "location": "Schoodic Lake, Cherryfield, ME"
+    },
+    "20170804-uppercoldstream1": {
+        "gain": 600,
+        "flist": [29,30,31,32,33,34,35,36,37,38],
+        "path": "/home/iannesbitt/MASTERS/fieldwork",
+        "subdir": "working/gpr",
+        "out": "/home/iannesbitt/MASTERS/writing/umaine-thesis/figures/appa",
+        "date": "2017-08-04",
+        "location": "Upper Cold Stream Pond (west basin), Lincoln, ME"
+    },
+    "20170804-uppercoldstream2": {
+        "gain": 600,
+        "flist": [39,40,41,42,43,44],
+        "path": "/home/iannesbitt/MASTERS/fieldwork",
+        "subdir": "working/gpr",
+        "out": "/home/iannesbitt/MASTERS/writing/umaine-thesis/figures/appa",
+        "date": "2017-08-04",
+        "location": "Upper Cold Stream Pond (east basin), Lincoln, ME"
+    }
+}
