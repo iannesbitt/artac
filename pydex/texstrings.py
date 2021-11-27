@@ -1,15 +1,23 @@
-CHAPTER = '''\\chapter{{Radar profile plots}} %Appendix title'''
+from string import Template
 
-SECTION = '''\\section{{%s %s}}'''
+CHAPTER = Template('\chapter{Radar profile plots} %Appendix title')
 
-FIGURE = '''
-\\begin{{figure}}[!h]
+SECTION = Template('\section{$date $location}')
+
+SUBSECTION = Template('\subsection{Line $fn}')
+
+FIGURE = Template('''
+\\begin{figure}[!h]
 	\\includegraphics[width=1\\textwidth]
-	{{figures/lines/%s.png}}
-	\\caption{{\\label{{fig:%s}}%s.}}
-\\end{{figure}}
-'''
+	{figures/data/$fn.png}
+	\\caption{\\label{fig:$fn}$caption.}
+\\end{figure}
+''')
 
-CLEAR = '''\\clearpage'''
+PCAPTION = Template('''Radar profile $fn in $location. Profile collected $date.''')
 
-END = '''\\endinput'''
+MCAPTION = Template('''Map of radar profile $fn in $location, collected $date.''')
+
+CLEAR = Template('''\\clearpage''')
+
+END = Template('''\\endinput''')

@@ -1,7 +1,7 @@
 import os, sys, glob
 import subprocess
 import json
-from .texstrings import CHAPTER, SECTION, FIGURE, CLEAR, END
+from .texstrings import CHAPTER, PCAPTION, MCAPTION, SECTION, SUBSECTION, FIGURE, CLEAR, END
 
 DPI = 150
 COLOR = {
@@ -70,57 +70,95 @@ def assemble(projects, p, fn):
     dztno = '%03d' % fn
     ipath = os.path.join(projects[p]['path'], p, projects[p]['subdir'])
     ifn = glob.glob(ipath + '/*%s.DZT' % (dztno))[0]
-    ofn = os.path.join(projects[p]['out'], os.path.basename(ifn))
+    ofn = os.path.join(projects[p]['out'], projects[p]['outsubdir'], os.path.basename(ifn))
     return ifn, ofn
 
 
-def testparams(parampath):
+def testparams(projects, outparams):
     '''
     Test the project files specified in the params file.
     '''
 
 
-def write(fstring, append=True):
+def write(out, st, append=True):
     '''
     Write the formatted LaTeX string to a file.
     '''
     mode = 'a' if append else 'w'
-    with open(texfile, mode) as f:
-        f.write('\n' + fstring + '\n')
+    with open(out, mode) as f:
+        f.write('\n' + st + '\n')
 
-def texput(string, projects, p, fn, ):
+
+def texput(part, out, projects=None, p=None, fn=None):
     '''
-    Format a LaTeX string.
+    Format a LaTeX string and send it to write to a file.
     '''
-    if string == "chapter":
-        write(CHAPTER, append=False)
-    if string == "section":
-        write(SECTION % (projects[p]['date'], projects[p]['location']))
-    if string == "figure":
-        write(CHAPTER % ())
-    if string == "clear":
-        write(CLEAR)
-    if string == "end":
-        write(END)
+    out = os.path.join(out['dir'], out['texfile'])
+
+    if part == "chapter":
+        write(out, st=CHAPTER.substitute(), append=False)
+    if part == "section":
+        write(out, st=SECTION.substitute(date=projects[p]['date'],
+                                         location=projects[p]['location']))
+    if part == "subsection":
+        write(out, st=SUBSECTION.substitute(fn=fn))
+    if part == "profile":
+        caption = PCAPTION.substitute(fn=fn,
+                                      date=projects[p]['date'],
+                                      location=projects[p]['location'])
+        write(out, st=FIGURE.substitute(fn=fn, caption=caption))
+    if part == "map":
+        caption = MCAPTION.substitute(fn=fn,
+                                      date=projects[p]['date'],
+                                      location=projects[p]['location'])
+        write(out, st=FIGURE.substitute(fn=fn, caption=caption))
+    if part == "clear":
+        write(out, st=CLEAR.substitute())
+    if part == "end":
+        write(out, st=END.substitute())
+
+
+def starttex(projects):
+    '''
+    Start LaTeX output.
+    '''
+    for p in projects:
+        texput('chapter', projects=projects, p=p)
+        return
 
 
 def run(parampath):
     '''
     Main function.
     '''
-    projects = getparams(parampath)
-    t = testparams(projects)
+    params = getparams(parampath)
+    projects = params['inparams']
+    outparams = params['outparams']
+    t = testparams(projects, outparams)
     if t.lower() != 'y':
         printM('User specified exit. Exiting.\n', color='yellow')
         return
+
+    starttex(outparams=outparams)
+
     nf, np = enum(projects)
     i, ip = 0, 0
     for p in projects:
+        if ip == 0:
+            
+        texput('section', projects=projects, p=p)
         ip += 1
         for fn in projects[p]["flist"]:
             printM('project "%s" (%s of %s)' % (p, ip, np), color='blue')
             ifn, ofn = assemble(projects, p, fn)
             process(ifn=ifn, ofn=ofn, gain=projects[p]["gain"])
+            makemap(ifn=ifn, projects=projects, p=p)
+            ffn = os.path.splitext(os.path.basename(ofn))
+            pfn = glob.glob('%s/%s*.png' % (ffn))[0]
+            mfn = glob.glob('%s/map_%s*.png' % (ffn))[0]
+            texput('subsection', fn=ffn, projects=projects, p=p)
+            texput('profile', fn=ffn, projects=projects, p=p)
+            texput('map', fn='map_'+ffn, projects=projects, p=p)
             i += 1
             printM("%s/%s files processed (project %s of %s)" % (i, nf, ip, np))
         printM('%s/%s projects done (finished with "%s")' % (ip, np, p), color='purple')
