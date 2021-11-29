@@ -2,6 +2,7 @@ import os, sys, glob
 import subprocess
 import json
 from .texstrings import CHAPTER, PCAPTION, MCAPTION, SECTION, SUBSECTION, FIGURE, CLEAR, END
+from .mapping import drawmap
 
 DPI = 150
 COLOR = {
@@ -86,10 +87,10 @@ def write(out, st, append=True):
     '''
     mode = 'a' if append else 'w'
     with open(out, mode) as f:
-        f.write('\n' + st + '\n')
+        f.write(st)
 
 
-def texput(part, out, projects=None, p=None, fn=None):
+def texput(part, out, projects=None, p=None, fn=None, mfn=None):
     '''
     Format a LaTeX string and send it to write to a file.
     '''
@@ -103,28 +104,27 @@ def texput(part, out, projects=None, p=None, fn=None):
     if part == "subsection":
         write(out, st=SUBSECTION.substitute(fn=fn))
     if part == "profile":
+        pfn = glob.glob('%s/%s*.png' % (out['outsubdir'], fn))[0]
         caption = PCAPTION.substitute(fn=fn,
                                       date=projects[p]['date'],
                                       location=projects[p]['location'])
-        write(out, st=FIGURE.substitute(fn=fn, caption=caption))
+        write(out, st=FIGURE.substitute(fn=fn, pfn=pfn, caption=caption))
     if part == "map":
         caption = MCAPTION.substitute(fn=fn,
                                       date=projects[p]['date'],
                                       location=projects[p]['location'])
-        write(out, st=FIGURE.substitute(fn=fn, caption=caption))
+        write(out, st=FIGURE.substitute(fn=fn, pfn=mfn, caption=caption))
     if part == "clear":
         write(out, st=CLEAR.substitute())
     if part == "end":
         write(out, st=END.substitute())
 
 
-def starttex(projects):
+def starttex(outparams):
     '''
     Start LaTeX output.
     '''
-    for p in projects:
-        texput('chapter', projects=projects, p=p)
-        return
+    texput('chapter', outparams)
 
 
 def run(parampath):
@@ -144,24 +144,29 @@ def run(parampath):
     nf, np = enum(projects)
     i, ip = 0, 0
     for p in projects:
-        if ip == 0:
-            
-        texput('section', projects=projects, p=p)
+        texput('section', out=outparams, projects=projects, p=p)
         ip += 1
         for fn in projects[p]["flist"]:
             printM('project "%s" (%s of %s)' % (p, ip, np), color='blue')
+
+            # process file
             ifn, ofn = assemble(projects, p, fn)
             process(ifn=ifn, ofn=ofn, gain=projects[p]["gain"])
-            makemap(ifn=ifn, projects=projects, p=p)
             ffn = os.path.splitext(os.path.basename(ofn))
-            pfn = glob.glob('%s/%s*.png' % (ffn))[0]
-            mfn = glob.glob('%s/map_%s*.png' % (ffn))[0]
-            texput('subsection', fn=ffn, projects=projects, p=p)
-            texput('profile', fn=ffn, projects=projects, p=p)
-            texput('map', fn='map_'+ffn, projects=projects, p=p)
+            mfn = drawmap(ifn=ifn, ffn=ffn, out=outparams, projects=projects, p=p)
+
+            # write subsection title, profile, and map figure sections
+            texput('subsection', out=outparams, fn=ffn, projects=projects, p=p)
+            texput('profile', out=outparams, fn=ffn, projects=projects, p=p)
+            texput('map', out=outparams, fn=fn, mfn=mfn, projects=projects, p=p)
+
             i += 1
             printM("%s/%s files processed (project %s of %s)" % (i, nf, ip, np))
+
+        texput('clear', out=outparams)
         printM('%s/%s projects done (finished with "%s")' % (ip, np, p), color='purple')
+    
+    texput('end', out=outparams)
 
 
 if __name__ == "__main__":
