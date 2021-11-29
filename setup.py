@@ -14,16 +14,17 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/iannesbitt/artac/",
     packages=setuptools.find_packages(),
-    install_requires=['readgssi'],
+    install_requires=['readgssi', 'matplotlib', 'basemap'],
     entry_points='''
         [console_scripts]
-        artac=artac.artac:main
+        artac=artac.main:start
     ''',
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
         "Intended Audience :: Science/Research",
+        "Framework :: Matplotlib",
         "Natural Language :: English",
         "Development Status :: 4 - Beta",
     ],
