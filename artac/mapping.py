@@ -72,8 +72,8 @@ def linedata(fn):
 
 def get_lines(ifn, all=True):
     bigdf = pd.DataFrame()
-    iname = os.path.splitext(ifn) # filename
-    gname = os.path.dirname(ifn)  # glob-friendly name (all csvs)
+    iname = os.path.splitext(ifn)[0] # filename
+    gname = os.path.dirname(ifn)     # glob-friendly name (all csvs)
 
     line, bigdf = linedata(iname)
     lines, bigdf = linedata(gname)

@@ -37,9 +37,9 @@ def process(ifn, ofn, gain, dpi=DPI):
     https://readgssi.readthedocs.io/en/latest/general.html#bash-usage
     '''
     subprocess.call(['readgssi',
-                     '-i', ifn,         # input file
-                     '-g', gain,        # gain
-                     '-o', ofn,         # output file
+                     '-i', '%s' % ifn,  # input file
+                     '-g', '%s' % gain, # gain
+                     '-o', '%s' % ofn,  # output file
                      '-T',              # plot title off
                      '-n',              # don't show plot window
                      '-N',              # distance normalization
@@ -48,7 +48,7 @@ def process(ifn, ofn, gain, dpi=DPI):
                      '-r', '75',        # boxcar noise removal
                      '-t', '65-100',    # vertical triangular FIR filter
                      '-p', '10',        # plot 10 inches wide
-                     '-d', dpi,         # dots per inch
+                     '-d', '%s' % dpi,  # dots per inch
                      '-x', 'm',         # x axis units
                      '-z', 'ns',        # z axis units
                      ])
@@ -179,7 +179,7 @@ def run(parampath):
             # process file
             ifn, ofn = assemble(projects, p, fn, outparams)
             process(ifn=ifn, ofn=ofn, gain=projects[p]["gain"])
-            ffn = os.path.splitext(os.path.basename(ofn))
+            ffn = os.path.splitext(os.path.basename(ofn))[0]
             mfn = drawmap(ifn=ifn, ffn=ffn, out=outparams, projects=projects, p=p)
 
             # write subsection title, profile, and map figure sections
