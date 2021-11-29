@@ -3,6 +3,7 @@ import subprocess
 import json
 from .texstrings import CHAPTER, PCAPTION, MCAPTION, SECTION, SUBSECTION, FIGURE, CLEAR, END
 from .mapping import drawmap
+import getopt
 
 DPI = 150
 COLOR = {
@@ -197,5 +198,31 @@ def run(parampath):
     texput('end', out=outparams)
 
 
+def sayparamerror():
+    '''
+    Repeatable printed text informing the user about the params file.
+    '''
+    param_url = 'https://github.com/iannesbitt/artac/blob/master/artac/params.json'
+    printM('Please specify a parameters json file as the only argument.', color='red')
+    printM('For an example please see %s' % (param_url), color='red')
+
+
+def start():
+    '''
+    Get parampath from opts and send it to run().
+    '''
+    try:
+        f = sys.argv[1]
+    except IndexError:
+        printM('No argument specified.', color='red')
+        sayparamerror()
+    if os.path.exists(f):
+        # run the program
+        run(f)
+    else:
+        printM('No parameters file found.', color='red')
+        sayparamerror()
+
+
 if __name__ == "__main__":
-    run()
+    start()
