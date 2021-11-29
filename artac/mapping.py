@@ -94,6 +94,7 @@ def plot_lines(lines, m, color='k'):
         x, y = m(line['lons'], line['lats'])
         m.plot(x, y, linewidth=1.5, color=color)
 
+
 def drawmap(ifn, ffn, out, projects, p):
     '''
     Draw map using matplotlib/Basemap.
