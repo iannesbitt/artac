@@ -3,7 +3,6 @@ import subprocess
 import json
 from .texstrings import CHAPTER, PCAPTION, MCAPTION, SECTION, SUBSECTION, FIGURE, CLEAR, END
 from .mapping import drawmap
-import getopt
 
 DPI = 150
 COLOR = {
@@ -20,18 +19,8 @@ def getparams(parampath):
     '''
     Load the projects and files in the parameters file.
     '''
-    return json.load(parampath)
-
-
-def enum(projects):
-    '''
-    Count the number of files to process.
-    '''
-    n, p = 0, 0
-    for p in projects:
-        n += len(projects[p]['flist'])
-        p += 1
-    return n, p
+    with open(parampath, 'r') as paramfile:
+        return json.load(paramfile)
 
 
 def printM(msg, color='green'):
@@ -65,7 +54,7 @@ def process(ifn, ofn, gain, dpi=DPI):
                      ])
 
 
-def assemble(projects, p, fn):
+def assemble(projects, p, fn, outparams):
     '''
     Assemble file parameters.
     '''
@@ -77,7 +66,7 @@ def assemble(projects, p, fn):
     else:
         printM('File not found: %s' % (os.path.join(ipath, '/*%s.DZT' % (dztno))), color='red')
         return False, False
-    ofn = os.path.join(projects[p]['out'], projects[p]['outsubdir'], os.path.basename(ifn))
+    ofn = os.path.join(outparams['dir'], outparams['figdir'], os.path.basename(ifn))
     return ifn, ofn
 
 
@@ -88,8 +77,10 @@ def testparams(projects, outparams):
     ip, ipp = 0, 0
     ipf = 0
     for p in projects:
+        printM('Looking for project %s in base path' % (p), color='bold')
+        printM(os.path.join(projects[p]['path'], p, projects[p]['subdir']), color='bold')
         for fn in projects[p]['flist']:
-            ifn, ofn = assemble(projects, p, fn)
+            ifn, ofn = assemble(projects, p, fn, outparams)
             if ifn:
                 # if this file exists, increment the number of files found
                 ipf += 1
@@ -98,8 +89,14 @@ def testparams(projects, outparams):
                     printM('Found project %s' % (p))
                     ip += 1
                 printM(ifn, color='blue')
+            else:
+                del projects[p]['flist'][fn]
         # reset project counter
-        ipp = ip
+        if ip == ipp:
+            printM('Could not find project %s' % (p), color='red')
+            del projects[p]
+        else:
+            ipp = ip
     
     print('Number of projects with found files: %s' % (ip))
     print('Number of files found: %s' % (ipf))
@@ -107,7 +104,9 @@ def testparams(projects, outparams):
     print('LaTeX output file: %s' % (os.path.join(outparams['dir'], outparams['texfile'])))
     print('Figure output dir: %s' % (os.path.join(outparams['dir'], outparams['figdir'])))
     print()
-    return input('Do you wish to proceed? (y/N)')
+    chal = input('Do you wish to proceed? (y/N)')
+    # returns the challenge answer, num projects, and num files
+    return chal, ip, ipf, projects
 
 
 def write(out, st, append=True):
@@ -163,14 +162,13 @@ def run(parampath):
     params = getparams(parampath)
     projects = params['inparams']
     outparams = params['outparams']
-    t = testparams(projects, outparams)
-    if t.lower() != 'y':
+    chal, np, nf, projects = testparams(projects, outparams)
+    if chal.lower() != 'y':
         printM('User specified exit. Exiting.\n', color='yellow')
         return
 
     starttex(outparams=outparams)
 
-    nf, np = enum(projects)
     i, ip = 0, 0
     for p in projects:
         texput('section', out=outparams, projects=projects, p=p)
@@ -179,7 +177,7 @@ def run(parampath):
             printM('project "%s" (%s of %s)' % (p, ip, np), color='blue')
 
             # process file
-            ifn, ofn = assemble(projects, p, fn)
+            ifn, ofn = assemble(projects, p, fn, outparams)
             process(ifn=ifn, ofn=ofn, gain=projects[p]["gain"])
             ffn = os.path.splitext(os.path.basename(ofn))
             mfn = drawmap(ifn=ifn, ffn=ffn, out=outparams, projects=projects, p=p)
@@ -187,7 +185,7 @@ def run(parampath):
             # write subsection title, profile, and map figure sections
             texput('subsection', out=outparams, fn=ffn, projects=projects, p=p)
             texput('profile', out=outparams, fn=ffn, projects=projects, p=p)
-            texput('map', out=outparams, fn=fn, mfn=mfn, projects=projects, p=p)
+            texput('map', out=outparams, fn=ffn, mfn=mfn, projects=projects, p=p)
 
             i += 1
             printM("%s/%s files processed (project %s of %s)" % (i, nf, ip, np))
