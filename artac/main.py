@@ -70,7 +70,12 @@ def assemble(projects, p, fn):
     '''
     dztno = '%03d' % fn
     ipath = os.path.join(projects[p]['path'], p, projects[p]['subdir'])
-    ifn = glob.glob(ipath + '/*%s.DZT' % (dztno))[0]
+    ifn = glob.glob(ipath + '/*%s.DZT' % (dztno))
+    if len(ifn) > 0:
+        ifn = ifn[0]
+    else:
+        printM('File not found: %s' % (os.path.join(ipath, '/*%s.DZT' % (dztno))), color='red')
+        return False, False
     ofn = os.path.join(projects[p]['out'], projects[p]['outsubdir'], os.path.basename(ifn))
     return ifn, ofn
 
@@ -79,6 +84,29 @@ def testparams(projects, outparams):
     '''
     Test the project files specified in the params file.
     '''
+    ip, ipp = 0, 0
+    ipf = 0
+    for p in projects:
+        for fn in projects[p]['flist']:
+            ifn, ofn = assemble(projects, p, fn)
+            if ifn:
+                # if this file exists, increment the number of files found
+                ipf += 1
+                if ip == ipp:
+                    # increment the number of projects if it hasn't been done
+                    printM('Found project %s' % (p))
+                    ip += 1
+                printM(ifn, color='blue')
+        # reset project counter
+        ipp = ip
+    
+    print('Number of projects with found files: %s' % (ip))
+    print('Number of files found: %s' % (ipf))
+    print('LaTeX output dir: %s' % (outparams['dir']))
+    print('LaTeX output file: %s' % (os.path.join(outparams['dir'], outparams['texfile'])))
+    print('Figure output dir: %s' % (os.path.join(outparams['dir'], outparams['figdir'])))
+    print()
+    return input('Do you wish to proceed? (y/N)')
 
 
 def write(out, st, append=True):
