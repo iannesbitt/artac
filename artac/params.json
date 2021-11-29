@@ -7,7 +7,7 @@
     "inparams": {
         "20170725-kingsbury": {
             "gain": 600,
-            "flist": [3,4,5,6,7,8,9,10,11,12,13,14],
+            "flist": [3,4,5,6,7,8,9,10,11],
             "path": "/home/iannesbitt/MASTERS/fieldwork",
             "subdir": "working/gpr/KING.PRJ",
             "date": "2017-07-25",
@@ -25,7 +25,7 @@
             "gain": 10,
             "flist": [6,7,8,9,10,11,12,13,14],
             "path": "/home/iannesbitt/MASTERS/fieldwork",
-            "subdir": "working/gpr",
+            "subdir": "working",
             "date": "2019-03-09",
             "location": "Mayfield Pond, Mayfield Corner, ME"
         },
@@ -45,7 +45,7 @@
             "date": "2017-10-01",
             "location": "The Tarn, Bar Harbor, ME"
         },
-        "20171001-mud": {
+        "20180201-mud": {
             "gain": 100,
             "flist": [74,75,76],
             "path": "/home/iannesbitt/MASTERS/fieldwork",
