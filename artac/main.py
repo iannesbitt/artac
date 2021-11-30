@@ -147,6 +147,16 @@ def starttex(outparams):
     texput('chapter', outparams)
 
 
+def note_err(ifn, outparams, err):
+    '''
+    Note error in errors.txt.
+    '''
+    mode = 'a' if err > 0 else 'w'
+    errf = os.path.join(outparams['dir'], outparams['figdir'], 'errors.txt')
+    with open(errf, mode) as errfile:
+        errfile.write(ifn + '\n')
+
+
 def run(parampath):
     '''
     Main function.
@@ -161,7 +171,8 @@ def run(parampath):
 
     starttex(outparams=outparams)
 
-    i, ip, e = 0, 0, 0
+    i, ip, err, dzgerr = 0, 0, 0, 0
+    errf = os.path.join(outparams['dir'], outparams['figdir'], 'errors.txt')
     for p in projects:
         texput('section', out=outparams, projects=projects, p=p)
         ip += 1
@@ -171,22 +182,33 @@ def run(parampath):
             # process file
             ifn, ofn = assemble(projects, p, fn, outparams)
             try:
+                printM('Processing %s with readgssi...' % (os.path.join(p,
+                                                            projects[p]['subdir'],
+                                                            os.path.basename(ifn))),
+                                                            color='blue')
                 process(ifn=ifn, ofn=ofn, gain=projects[p]["gain"],
                         dpi=outparams['dpi'], method='function')
             except UnicodeDecodeError as e:
-                printM('UnicodeDecodeError from readgssi (probably when reading start of DZG file)', color='red')
+                printM('%s from readgssi:\n%s' % (type(e).__name__, e), color='red')
+                printM('(this probably occurred due to garbled bytes at the beginning of the DZG file)', color='red')
+                printM('DZG file will be noted in %s/errors.txt' % (outparams['figdir']), color='red')
                 dzg = os.path.splitext(ifn)[0] + '.DZG'
                 printM(dzg, color='red')
-                mode = 'a' if e > 0 else 'w'
-                errf = os.path.join(outparams['dir'], outparams['figdir'], 'errors.txt')
-                with open(errf, mode) as errfile:
-                    errfile.write(dzg + '\n')
-                e += 1
+                note_err(dzg, outparams, err)
+                dzgerr += 1
+                err += 1
+            except Exception as e:
+                printM('%s from readgssi:\n%s' % (type(e).__name__, e), color='red')
+                printM('DZT file will be noted in %s/errors.txt' % (outparams['figdir']), color='red')
+                printM(ifn, color='red')
+                note_err(ifn, outparams, err)
+                err += 1
             ffn = os.path.splitext(os.path.basename(ofn))[0]
             printM('Drawing map for %s' % (ifn), color='blue')
             mfn = drawmap(ifn=ifn, ffn=ffn, out=outparams, projects=projects, p=p)
 
             # write subsection title, profile, and map figure sections
+            printM('Writing tex subsection and figure environments...', color='blue')
             texput('subsection', out=outparams, fn=ffn, projects=projects, p=p)
             texput('profile', out=outparams, fn=ffn, projects=projects, p=p)
             texput('map', out=outparams, fn=ffn, mfn=mfn, projects=projects, p=p)
@@ -198,6 +220,11 @@ def run(parampath):
         printM('%s/%s projects done (finished with "%s")' % (ip, np, p), color='purple')
     
     texput('end', out=outparams)
+    if err > 0:
+        printM('Errors on %s/%s files (%s due to DZG errors).' % (err, nf, dzgerr), color='red')
+        printM('Errored files are noted in %s' % (errf), color='red')
+    printM('Done processing %s files.' % (nf))
+
 
 
 def sayparamerror():
