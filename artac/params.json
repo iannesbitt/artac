@@ -2,7 +2,8 @@
     "outparams": {
         "dir": "/home/iannesbitt/MASTERS/writing/umaine-thesis",
         "figdir": "figures/data",
-        "texfile": "AppA-test.tex"
+        "texfile": "AppA-test.tex",
+        "dpi": 150
     },
     "inparams": {
         "20170725-kingsbury": {

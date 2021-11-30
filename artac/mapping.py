@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 import numpy as np
 import pandas as pd
+from . import printM
 
 OBD = {     # overview map boundaries (centered on Maine state lines)
     "ll_lon": -71.249710,
@@ -55,27 +56,27 @@ def init_detail(ax, region=[], res=1000, service='World_Imagery', # also 'World_
 
 def linedata(fn):
     lines = {}
-    i = 0
+    bigdf = False
+    printM('Searching for location file %s-gps.csv', color='blue')
     for dzg_csv in glob.glob(fn + '*-gps.csv'):
         df = pd.read_csv(dzg_csv)
-        if i == 0:
+        if not bigdf:
             bigdf = df.copy()
         else:
-            bigdf.append(df)
+            bigdf = bigdf.append(df)
         lats = df['latitude'].tolist()
         lons = df['longitude'].tolist()
         short_name = os.path.basename(dzg_csv).split('-gps')[0]
         lines[short_name] = {"lats":lats, "lons":lons}
-        i += 1
-    return lines
+    return lines, bigdf
 
 
-def get_lines(ifn, all=True):
+def get_lines(ifn):
     bigdf = pd.DataFrame()
     iname = os.path.splitext(ifn)[0] # filename
     gname = os.path.dirname(ifn)     # glob-friendly name (all csvs)
 
-    line, bigdf = linedata(iname)
+    line, smalldf = linedata(ifn)
     lines, bigdf = linedata(gname)
 
     dbd = {}
@@ -107,10 +108,9 @@ def drawmap(ifn, ffn, out, projects, p):
                            projects[p]['subdir'])
 
     fig, ax = initfig()
-    m0 = init_overview(ax[0])
+    m0 = init_overview(ax[0], res='h')
 
-    lines, extents = get_lines(ifn)
-    line = get_lines(ifn, all=False)
+    lines, line, extents = get_lines(ifn)
     m1 = init_detail(ax[1], region=extents)
     plot_lines(lines, m1, color='silver')
     plot_lines(line, m1, color='firebrick')

@@ -3,17 +3,8 @@ import subprocess
 import json
 from .texstrings import CHAPTER, PCAPTION, MCAPTION, SECTION, SUBSECTION, FIGURE, CLEAR, END
 from .mapping import drawmap
+from . import printM
 
-DPI = 150
-COLOR = {
-	'purple': '\033[95m',
-	'blue': '\033[94m',
-	'green': '\033[92m',
-	'yellow': '\033[93m',
-	'red': '\033[91m',
-	'white': '\033[0m',
-	'bold': "\033[1m",
-}
 
 def getparams(parampath):
     '''
@@ -23,14 +14,7 @@ def getparams(parampath):
         return json.load(paramfile)
 
 
-def printM(msg, color='green'):
-    '''
-    Display a printed message in color.
-    '''
-    print('%s%s%s%s' % (COLOR['bold'], COLOR[color], msg, COLOR['white']))
-
-
-def process(ifn, ofn, gain, dpi=DPI):
+def process(ifn, ofn, gain, dpi=150):
     '''
     Call the process with the desired flags.
     Flags are detailed here:
@@ -104,7 +88,7 @@ def testparams(projects, outparams):
     print('LaTeX output file: %s' % (os.path.join(outparams['dir'], outparams['texfile'])))
     print('Figure output dir: %s' % (os.path.join(outparams['dir'], outparams['figdir'])))
     print()
-    chal = input('Do you wish to proceed? (y/N)')
+    chal = input('Do you wish to proceed? (y/N) ')
     # returns the challenge answer, num projects, and num files
     return chal, ip, ipf, projects
 
@@ -178,8 +162,9 @@ def run(parampath):
 
             # process file
             ifn, ofn = assemble(projects, p, fn, outparams)
-            process(ifn=ifn, ofn=ofn, gain=projects[p]["gain"])
+            process(ifn=ifn, ofn=ofn, gain=projects[p]["gain"], dpi=outparams['dpi'])
             ffn = os.path.splitext(os.path.basename(ofn))[0]
+            printM('Drawing map for %s' % (ifn), color='blue')
             mfn = drawmap(ifn=ifn, ffn=ffn, out=outparams, projects=projects, p=p)
 
             # write subsection title, profile, and map figure sections
