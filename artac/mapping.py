@@ -141,10 +141,10 @@ def plot_mark(extents, m):
 def plot_lines(lines, m, color='k'):
     for line in lines:
         x, y = m(lines[line]['lons'], lines[line]['lats'])
-        l = m.plot(x, y, color=color)
-        if color == 'red':
+        l = m.plot(x, y, color=color)[0]
+        if color == 'firebrick':
             # the highlighted line
-            add_arrow(line=l)
+            add_arrow(line=l, size=20)
 
 
 def drawmap(ifn, ffn, out, projects, p):
@@ -164,7 +164,7 @@ def drawmap(ifn, ffn, out, projects, p):
     m1 = init_detail(ax[1], region=extents,
                      epsg=5070, projection='aea')
     plot_lines(lines, m1, color='silver')
-    plot_lines(line, m1, color='firebrick')
+    plot_lines(line, m1, color='firebrick') # the hightlighted line
 
     figpath = os.path.join(figdir, figname)
     printM('Saving figure as %s' % figpath, color='blue')
