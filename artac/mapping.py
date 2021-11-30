@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 import numpy as np
 import pandas as pd
+import math
+from urllib.error import HTTPError
 from . import printM
 
 OBD = {     # overview map boundaries (centered on Maine state lines)
@@ -49,8 +51,10 @@ def init_detail(ax, region=[], res=1000, service='World_Imagery', # also 'World_
                 llcrnrlon=region['ll_lon'], llcrnrlat=region['ll_lat'],
                 urcrnrlon=region['ur_lon'], urcrnrlat=region['ur_lat'],
                 lat_0=region['cn_lat'], lon_0=region['cn_lon'],)
-    m.arcgisimage(server='https://services.arcgisonline.com/ArcGIS/', service=service,
-                  xpixels=res, verbose=True)
+    try:
+        m.arcgisimage(service=service, xpixels=res, verbose=True)
+    except HTTPError as e:
+        printM('HTTP Error:\n%s' % e, color='red')
     return m
 
 
@@ -61,8 +65,8 @@ def linedata(fn):
     for dzg_csv in glob.glob(fn + '*-gps.csv'):
         df = pd.read_csv(dzg_csv)
         bigdf = bigdf.append(df)
-        lats = df['latitude'].tolist()
-        lons = df['longitude'].tolist()
+        lats = df['latitude'].values
+        lons = df['longitude'].values
         short_name = os.path.basename(dzg_csv).split('-gps')[0]
         lines[short_name] = {"lats":lats, "lons":lons}
     return lines, bigdf
@@ -73,23 +77,23 @@ def get_lines(ifn):
     iname = os.path.splitext(ifn)[0] # filename
     gname = os.path.dirname(ifn)     # glob-friendly name (all csvs)
 
-    line, smalldf = linedata(ifn)
+    line, smalldf = linedata(iname)
     lines, bigdf = linedata(gname + '/') # need to add slash to make glob
 
     dbd = {}
-    dbd['ll_lat'] = bigdf.latitude.min()
-    dbd['ll_lon'] = bigdf.longitude.max()
-    dbd['ur_lat'] = bigdf.latitude.max()
-    dbd['ur_lon'] = bigdf.longitude.min()
-    dbd['cn_lat'] = (dbd['ll_lat'] + dbd['ur_lat']) / 2.
-    dbd['cn_lon'] = (dbd['ll_lon'] + dbd['ur_lon']) / 2.
+    dbd['cn_lat'] = (bigdf.latitude.min() + bigdf.latitude.max()) / 2.
+    dbd['cn_lon'] = (bigdf.longitude.min() + bigdf.longitude.max()) / 2.
+    dbd['ll_lat'] = bigdf.latitude.min() - 0.002    # latitude-specific! hacky
+    dbd['ll_lon'] = bigdf.longitude.min() - 0.012   # latitude-specific! hacky
+    dbd['ur_lat'] = bigdf.latitude.max() + 0.002    # latitude-specific! hacky
+    dbd['ur_lon'] = bigdf.longitude.max() + 0.012   # latitude-specific! hacky
 
     return lines, line, dbd
 
 
 def plot_lines(lines, m, color='k'):
     for line in lines:
-        x, y = m(line['lons'], line['lats'])
+        x, y = m(lines[line]['lons'], lines[line]['lats'])
         m.plot(x, y, linewidth=1.5, color=color)
 
 
@@ -98,7 +102,7 @@ def drawmap(ifn, ffn, out, projects, p):
     Draw map using matplotlib/Basemap.
     '''
     figdir = os.path.join(out['dir'], out['figdir'])
-    figname = '%s.png' % (ffn)
+    figname = '%s-map.png' % (ffn)
     mfn = os.path.join(out['figdir'], figname)
     datadir = os.path.join(projects[p]['path'],
                            p,
@@ -108,10 +112,13 @@ def drawmap(ifn, ffn, out, projects, p):
     m0 = init_overview(ax[0], res='h')
 
     lines, line, extents = get_lines(ifn)
-    m1 = init_detail(ax[1], region=extents)
+    m1 = init_detail(ax[1], region=extents, epsg=5070, projection='aea')
     plot_lines(lines, m1, color='silver')
     plot_lines(line, m1, color='firebrick')
 
-    plt.savefig(os.path.join(figdir, figname))
+    figpath = os.path.join(figdir, figname)
+    printM('Saving figure as %s' % figpath, color='blue')
+    plt.tight_layout()
+    plt.savefig(figpath)
 
     return mfn

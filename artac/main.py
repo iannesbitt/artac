@@ -93,12 +93,12 @@ def testparams(projects, outparams):
     return chal, ip, ipf, projects
 
 
-def write(out, st, append=True):
+def write(texf, st, append=True):
     '''
     Write the formatted LaTeX string to a file.
     '''
     mode = 'a' if append else 'w'
-    with open(out, mode) as f:
+    with open(texf, mode) as f:
         f.write(st)
 
 
@@ -106,30 +106,30 @@ def texput(part, out, projects=None, p=None, fn=None, mfn=None):
     '''
     Format a LaTeX string and send it to write to a file.
     '''
-    out = os.path.join(out['dir'], out['texfile'])
+    texf=texf = os.path.join(out['dir'], out['texfile'])
 
     if part == "chapter":
-        write(out, st=CHAPTER.substitute(), append=False)
+        write(texf=texf, st=CHAPTER.substitute(), append=False)
     if part == "section":
-        write(out, st=SECTION.substitute(date=projects[p]['date'],
+        write(texf=texf, st=SECTION.substitute(date=projects[p]['date'],
                                          location=projects[p]['location']))
     if part == "subsection":
-        write(out, st=SUBSECTION.substitute(fn=fn))
+        write(texf=texf, st=SUBSECTION.substitute(fn=fn))
     if part == "profile":
-        pfn = glob.glob('%s/%s*.png' % (out['outsubdir'], fn))[0]
+        pfn = '%s/%s*.png' % (out['figdir'], fn)
         caption = PCAPTION.substitute(fn=fn,
                                       date=projects[p]['date'],
                                       location=projects[p]['location'])
-        write(out, st=FIGURE.substitute(fn=fn, pfn=pfn, caption=caption))
+        write(texf=texf, st=FIGURE.substitute(fn=fn, pfn=pfn, caption=caption))
     if part == "map":
         caption = MCAPTION.substitute(fn=fn,
                                       date=projects[p]['date'],
                                       location=projects[p]['location'])
-        write(out, st=FIGURE.substitute(fn=fn, pfn=mfn, caption=caption))
+        write(texf=texf, st=FIGURE.substitute(fn=fn, pfn=mfn, caption=caption))
     if part == "clear":
-        write(out, st=CLEAR.substitute())
+        write(texf=texf, st=CLEAR.substitute())
     if part == "end":
-        write(out, st=END.substitute())
+        write(texf=texf, st=END.substitute())
 
 
 def starttex(outparams):
