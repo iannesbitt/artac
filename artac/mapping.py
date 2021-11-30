@@ -104,6 +104,8 @@ def add_arrow(line, position=None, direction='right', size=15, color=None):
     """
     add an arrow to a line.
 
+    Code from https://stackoverflow.com/a/34018322/4648080
+
     line:       Line2D object
     position:   x-position of the arrow. If None, mean of xdata is taken
     direction:  'left' or 'right'
