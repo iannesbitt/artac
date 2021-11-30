@@ -4,6 +4,7 @@ import json
 from .texstrings import CHAPTER, PCAPTION, MCAPTION, SECTION, SUBSECTION, FIGURE, CLEAR, END
 from .mapping import drawmap
 from . import printM
+from readgssi.readgssi import readgssi
 
 
 def getparams(parampath):
@@ -14,28 +15,35 @@ def getparams(parampath):
         return json.load(paramfile)
 
 
-def process(ifn, ofn, gain, dpi=150):
+def process(ifn, ofn, gain, dpi=150, method='subprocess'):
     '''
     Call the process with the desired flags.
     Flags are detailed here:
     https://readgssi.readthedocs.io/en/latest/general.html#bash-usage
     '''
-    subprocess.call(['readgssi',
-                     '-i', '%s' % ifn,  # input file
-                     '-g', '%s' % gain, # gain
-                     '-o', '%s' % ofn,  # output file
-                     '-T',              # plot title off
-                     '-n',              # don't show plot window
-                     '-N',              # distance normalization
-                     '-Z', '233',       # time zero
-                     '-s', 'auto',      # stacking (auto)
-                     '-r', '75',        # boxcar noise removal
-                     '-t', '65-100',    # vertical triangular FIR filter
-                     '-p', '10',        # plot 10 inches wide
-                     '-d', '%s' % dpi,  # dots per inch
-                     '-x', 'm',         # x axis units
-                     '-z', 'ns',        # z axis units
-                     ])
+    if method == 'subprocess':
+        subprocess.call(['readgssi',
+                         '-i', '%s' % ifn,  # input file
+                         '-g', '%s' % gain, # gain
+                         '-o', '%s' % ofn,  # output file
+                         '-T',              # plot title off
+                         '-n',              # don't show plot window
+                         '-N',              # distance normalization
+                         '-Z', '233',       # time zero
+                         '-s', 'auto',      # stacking (auto)
+                         '-r', '75',        # boxcar noise removal
+                         '-t', '65-100',    # vertical triangular FIR filter
+                         '-p', '10',        # plot 10 inches wide
+                         '-d', '%s' % dpi,  # dots per inch
+                         '-x', 'm',         # x axis units
+                         '-z', 'ns',        # z axis units
+                         ])
+    else:
+        readgssi(infile=ifn, outfile=ofn, gain=gain, dpi=dpi,
+                 plotting=True, figsize=10, title=False,
+                 stack='auto', x='m', z='ns', zero=[233,0,0,0],
+                 noshow=True, normalize=True, bgr=True, window=75,
+                 freqmax=100, freqmin=65, verbose=False, frmt='png')
 
 
 def assemble(projects, p, fn, outparams):
@@ -153,7 +161,7 @@ def run(parampath):
 
     starttex(outparams=outparams)
 
-    i, ip = 0, 0
+    i, ip, e = 0, 0, 0
     for p in projects:
         texput('section', out=outparams, projects=projects, p=p)
         ip += 1
@@ -162,7 +170,18 @@ def run(parampath):
 
             # process file
             ifn, ofn = assemble(projects, p, fn, outparams)
-            process(ifn=ifn, ofn=ofn, gain=projects[p]["gain"], dpi=outparams['dpi'])
+            try:
+                process(ifn=ifn, ofn=ofn, gain=projects[p]["gain"],
+                        dpi=outparams['dpi'], method='function')
+            except UnicodeDecodeError as e:
+                printM('UnicodeDecodeError from readgssi (probably when reading start of DZG file)', color='red')
+                dzg = os.path.splitext(ifn)[0] + '.DZG'
+                printM(dzg)
+                mode = 'a' if e > 0 else 'w'
+                errf = os.path.join(outparams['dir'], outparams['figdir'], 'errors.txt')
+                with open(errf, mode) as errfile:
+                    errfile.write(dzg + '\n')
+                e += 1
             ffn = os.path.splitext(os.path.basename(ofn))[0]
             printM('Drawing map for %s' % (ifn), color='blue')
             mfn = drawmap(ifn=ifn, ffn=ffn, out=outparams, projects=projects, p=p)
