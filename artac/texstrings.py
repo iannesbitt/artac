@@ -1,10 +1,10 @@
 from string import Template
 
-CHAPTER = Template('\chapter{Radar profile plots} %Appendix title\n\n')
+CHAPTER = Template('\chapter{Radar profile plots} %Appendix title\n')
 
-SECTION = Template('\section{$date $location}\n\n')
+SECTION = Template('\n\section{$date $location}\n')
 
-SUBSECTION = Template('\subsection{Line $fn}\n\n')
+SUBSECTION = Template('\n\subsection{Line $fn}\n\n')
 
 FIGURE = Template('''\\begin{figure}[!h]
 	\\includegraphics[width=1\\textwidth] %% make figure text width
