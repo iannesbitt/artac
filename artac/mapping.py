@@ -130,7 +130,7 @@ def add_arrow(line, position=None, direction='right', size=15, color=None):
     line.axes.annotate('',
         xytext=(xdata[start_ind], ydata[start_ind]),
         xy=(xdata[end_ind], ydata[end_ind]),
-        arrowprops=dict(arrowstyle="->", color=color),
+        arrowprops=dict(arrowstyle="-|>", color=color),
         size=size
     )
 
