@@ -49,21 +49,18 @@ def init_detail(ax, region=[], res=1000, service='World_Imagery', # also 'World_
                 llcrnrlon=region['ll_lon'], llcrnrlat=region['ll_lat'],
                 urcrnrlon=region['ur_lon'], urcrnrlat=region['ur_lat'],
                 lat_0=region['cn_lat'], lon_0=region['cn_lon'],)
-    m.arcgisimage(server='http://server.arcgisonline.com/ArcGIS', service=service,
+    m.arcgisimage(server='https://services.arcgisonline.com/ArcGIS/', service=service,
                   xpixels=res, verbose=True)
     return m
 
 
 def linedata(fn):
     lines = {}
-    bigdf = False
-    printM('Searching for location file(s) %s-gps.csv' % (fn), color='blue')
+    bigdf = pd.DataFrame()
+    printM('Searching for location file(s) %s*-gps.csv' % (fn), color='blue')
     for dzg_csv in glob.glob(fn + '*-gps.csv'):
         df = pd.read_csv(dzg_csv)
-        if not bigdf:
-            bigdf = df.copy()
-        else:
-            bigdf = bigdf.append(df)
+        bigdf = bigdf.append(df)
         lats = df['latitude'].tolist()
         lons = df['longitude'].tolist()
         short_name = os.path.basename(dzg_csv).split('-gps')[0]
@@ -77,7 +74,7 @@ def get_lines(ifn):
     gname = os.path.dirname(ifn)     # glob-friendly name (all csvs)
 
     line, smalldf = linedata(ifn)
-    lines, bigdf = linedata(gname + '/') # need to add slash to make glob work
+    lines, bigdf = linedata(gname + '/') # need to add slash to make glob
 
     dbd = {}
     dbd['ll_lat'] = bigdf.latitude.min()
