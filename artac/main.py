@@ -124,7 +124,7 @@ def texput(part, out, projects=None, p=None, fn=None, mfn=None):
     if part == "subsection":
         write(texf=texf, st=SUBSECTION.substitute(fn=fn))
     if part == "profile":
-        pfn = '%s/%s*.png' % (out['figdir'], fn)
+        pfn = '%s/%s.png' % (out['figdir'], fn)
         caption = PCAPTION.substitute(fn=fn,
                                       date=projects[p]['date'],
                                       location=projects[p]['location'])
