@@ -2,6 +2,7 @@ import os, glob
 import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 import numpy as np
+from numpy.core.fromnumeric import size
 import pandas as pd
 import math
 from urllib.error import HTTPError
@@ -20,42 +21,50 @@ def initfig():
     '''
     Return the figure and axes instances.
     '''
-    fig, ax = plt.subplots(ncols=2, figsize=(10,5), dpi=300)
+    fig, ax = plt.subplots(ncols=2, figsize=(10,5.6), dpi=300)
     fig.patch.set_facecolor('#ffffff')
     return fig, ax
 
 
-def init_overview(ax, res):
+def init_overview(ax, resolution='h', res=1000, service='World_Shaded_Relief',
+                  epsg=3857, projection='merc'):
     '''
     Make overview map.
     '''
-    m = Basemap(llcrnrlon=OBD['ll_lon'], llcrnrlat=OBD['ll_lat'],
-                urcrnrlon=OBD["ur_lon"], urcrnrlat=OBD["ur_lat"],
-                lat_0=OBD['cn_lat'], lon_0=OBD['cn_lon'],
-                projection='merc', resolution=res, ax=ax)
-    m.drawmapboundary(fill_color='none')
-    m.drawstates(zorder=1, linewidth=0.5)
-    m.drawcountries(zorder=1, linewidth=0.75)
-    m.drawparallels(np.arange(int(OBD['ll_lat']),int(OBD["ur_lat"]+1),1),labels=[1,0,0,0], linewidth=0.0)
-    m.drawmeridians(np.arange(int(OBD['ll_lon']-1),int(OBD["ur_lon"]),1),labels=[0,0,0,1], linewidth=0.0)
-    return m
+    m0 = Basemap(projection=projection, epsg=epsg,
+                resolution=resolution, ax=ax,
+                llcrnrlon=OBD['ll_lon'], llcrnrlat=OBD['ll_lat'],
+                urcrnrlon=OBD['ur_lon'], urcrnrlat=OBD['ur_lat'],
+                lat_0=OBD['cn_lat'], lon_0=OBD['cn_lon'])
+    m0.drawmapboundary(fill_color='none')
+    m0.drawstates(zorder=1, linewidth=0.5)
+    m0.drawcountries(zorder=1, linewidth=0.75)
+    m0.drawparallels(np.arange(int(OBD['ll_lat']),int(OBD['ur_lat']+1),1),labels=[1,0,0,0], linewidth=0.0)
+    m0.drawmeridians(np.arange(int(OBD['ll_lon']),int(OBD['ur_lon']),1),labels=[0,0,0,1], linewidth=0.0)
+    try:
+        m0.arcgisimage(service=service, xpixels=res, verbose=True)
+    except HTTPError as e:
+        printM('HTTP Error:\n%s' % e, color='red')
+        m0.fillcontinents(zorder=0)
+
+    return m0
 
 
 def init_detail(ax, region=[], res=1000, service='World_Imagery', # also 'World_Topo_Map'
-                epsg=4326,resolution='h',projection='mill'):
+                epsg=4326, resolution='h', projection='merc'):
     '''
     Make detail map.
     '''
-    m = Basemap(projection=projection, epsg=epsg,
-                resolution=resolution,
+    m1 = Basemap(projection=projection, epsg=epsg,
+                resolution=resolution, ax=ax,
                 llcrnrlon=region['ll_lon'], llcrnrlat=region['ll_lat'],
                 urcrnrlon=region['ur_lon'], urcrnrlat=region['ur_lat'],
                 lat_0=region['cn_lat'], lon_0=region['cn_lon'],)
     try:
-        m.arcgisimage(service=service, xpixels=res, verbose=True)
+        m1.arcgisimage(service=service, xpixels=res, verbose=True)
     except HTTPError as e:
         printM('HTTP Error:\n%s' % e, color='red')
-    return m
+    return m1
 
 
 def linedata(fn):
@@ -91,10 +100,15 @@ def get_lines(ifn):
     return lines, line, dbd
 
 
+def plot_mark(extents, m):
+    x, y = m(extents['cn_lon'], extents['cn_lat'])
+    m.plot(x, y, 'ro')
+
+
 def plot_lines(lines, m, color='k'):
     for line in lines:
         x, y = m(lines[line]['lons'], lines[line]['lats'])
-        m.plot(x, y, linewidth=1.5, color=color)
+        m.plot(x, y, color=color)
 
 
 def drawmap(ifn, ffn, out, projects, p):
@@ -104,15 +118,15 @@ def drawmap(ifn, ffn, out, projects, p):
     figdir = os.path.join(out['dir'], out['figdir'])
     figname = '%s-map.png' % (ffn)
     mfn = os.path.join(out['figdir'], figname)
-    datadir = os.path.join(projects[p]['path'],
-                           p,
-                           projects[p]['subdir'])
+    lines, line, extents = get_lines(ifn)
 
     fig, ax = initfig()
-    m0 = init_overview(ax[0], res='h')
+    m0 = init_overview(ax[0], service='World_Shaded_Relief',
+                       epsg=3857, projection='lcc')
+    plot_mark(extents=extents, m=m0)
 
-    lines, line, extents = get_lines(ifn)
-    m1 = init_detail(ax[1], region=extents, epsg=5070, projection='aea')
+    m1 = init_detail(ax[1], region=extents,
+                     epsg=5070, projection='aea')
     plot_lines(lines, m1, color='silver')
     plot_lines(line, m1, color='firebrick')
 
