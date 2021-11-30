@@ -77,7 +77,7 @@ def get_lines(ifn):
     gname = os.path.dirname(ifn)     # glob-friendly name (all csvs)
 
     line, smalldf = linedata(ifn)
-    lines, bigdf = linedata(gname)
+    lines, bigdf = linedata(gname + '/') # need to add slash to make glob work
 
     dbd = {}
     dbd['ll_lat'] = bigdf.latitude.min()
