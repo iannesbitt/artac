@@ -57,7 +57,7 @@ def init_detail(ax, region=[], res=1000, service='World_Imagery', # also 'World_
 def linedata(fn):
     lines = {}
     bigdf = False
-    printM('Searching for location file %s-gps.csv', color='blue')
+    printM('Searching for location file(s) %s-gps.csv' % (fn), color='blue')
     for dzg_csv in glob.glob(fn + '*-gps.csv'):
         df = pd.read_csv(dzg_csv)
         if not bigdf:
