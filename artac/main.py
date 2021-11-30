@@ -42,7 +42,7 @@ def process(ifn, ofn, gain, dpi=150, method='subprocess'):
         readgssi(infile=ifn, outfile=ofn, gain=gain, dpi=dpi,
                  plotting=True, figsize=10, title=False,
                  stack='auto', x='m', z='ns', zero=[233,0,0,0],
-                 noshow=True, normalize=True, bgr=True, window=75,
+                 noshow=True, normalize=True, bgr=True, win=75,
                  freqmax=100, freqmin=65, verbose=False, frmt='png')
 
 
@@ -176,7 +176,7 @@ def run(parampath):
             except UnicodeDecodeError as e:
                 printM('UnicodeDecodeError from readgssi (probably when reading start of DZG file)', color='red')
                 dzg = os.path.splitext(ifn)[0] + '.DZG'
-                printM(dzg)
+                printM(dzg, color='red')
                 mode = 'a' if e > 0 else 'w'
                 errf = os.path.join(outparams['dir'], outparams['figdir'], 'errors.txt')
                 with open(errf, mode) as errfile:
