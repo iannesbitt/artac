@@ -17,11 +17,11 @@ OBD = {     # overview map boundaries (centered on Maine state lines)
     "cn_lon": 45.5,
 }
 
-def initfig():
+def initfig(dpi):
     '''
     Return the figure and axes instances.
     '''
-    fig, ax = plt.subplots(ncols=2, figsize=(10,5.6), dpi=300)
+    fig, ax = plt.subplots(ncols=2, figsize=(6.5,3.6), dpi=dpi)
     fig.patch.set_facecolor('#ffffff')
     return fig, ax
 
@@ -167,7 +167,7 @@ def drawmap(ifn, ffn, out, projects, p):
     mfn = os.path.join(out['figdir'], figname)
     lines, line, extents = get_lines(ifn)
 
-    fig, ax = initfig()
+    fig, ax = initfig(dpi=out['dpi'])
     m0 = init_overview(ax[0], service='World_Shaded_Relief',
                        epsg=3857, projection='lcc')
     plot_mark(extents=extents, m=m0)

@@ -15,7 +15,7 @@ def getparams(parampath):
         return json.load(paramfile)
 
 
-def process(ifn, ofn, projects, p, dpi=150, figsize=7, method='subprocess'):
+def process(ifn, ofn, projects, p, dpi=150, figsize=5, method='subprocess'):
     '''
     Call the process with the desired flags.
     Flags are detailed here:
@@ -35,7 +35,7 @@ def process(ifn, ofn, projects, p, dpi=150, figsize=7, method='subprocess'):
                          '-s', 'auto',                      # stacking (auto)
                          '-r', '%s' % projects[p]['bgrwin'],# boxcar noise removal
                          '-t', '%s' % freqrange,            # vertical triangular FIR filter
-                         '-p', '%s' % figsize,              # plot 7 inches wide
+                         '-p', '%s' % figsize,              # plot ~6.5 inches wide
                          '-d', '%s' % dpi,                  # dots per inch
                          '-x', 'm',                         # x axis units
                          '-z', 'ns',                        # z axis units
@@ -43,7 +43,7 @@ def process(ifn, ofn, projects, p, dpi=150, figsize=7, method='subprocess'):
     else:
         readgssi(infile=ifn, outfile=ofn, gain=projects[p]['gain'],
                  dpi=dpi, stack='auto', x='m', z='ns',
-                 plotting=True, figsize=7, title=False,
+                 plotting=True, figsize=5, title=False,
                  zero=[projects[p]['zero'],None,None,None],
                  noshow=True, normalize=True, bgr=True,
                  win=projects[p]['bgrwin'],
@@ -101,6 +101,7 @@ def testparams(projects, outparams):
     print('LaTeX output dir: %s' % (outparams['dir']))
     print('LaTeX output file: %s' % (os.path.join(outparams['dir'], outparams['texfile'])))
     print('Figure output dir: %s' % (os.path.join(outparams['dir'], outparams['figdir'])))
+    print('Figure dpi: %s' % (outparams['dpi']))
     print()
     chal = input('Do you wish to proceed? (y/N) ')
     # returns the challenge answer, num projects, and num files
