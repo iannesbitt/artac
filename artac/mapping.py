@@ -64,6 +64,15 @@ def init_detail(ax, region=[], res=1000, service='World_Imagery', # also 'World_
         m1.arcgisimage(service=service, xpixels=res, verbose=True)
     except HTTPError as e:
         printM('HTTP Error:\n%s' % e, color='red')
+
+    lat_adj = (region['ur_lat'] - region['ll_lat']) * -0.03
+    lon_adj = (region['ur_lon'] - region['ll_lon']) * 0.3
+    m1.drawmapscale(region['ll_lon']+lon_adj,
+                    region['ll_lat']+lat_adj,
+                    region['ll_lon']+lon_adj,
+                    region['ll_lat']+lat_adj,
+                    1000, barstyle='fancy',
+                    units='m', fontcolor='w')
     return m1
 
 

@@ -12,9 +12,9 @@ FIGURE = Template('''\\begin{figure}[!h]
 	\\caption{\\label{fig:$fn}$caption.} %% caption with label as basename
 \\end{figure}\n''')
 
-PCAPTION = Template('''Radar profile $fn in $location. Profile collected $date.''')
+PCAPTION = Template('''Radar profile $fn in $location. Profile collected $date. Processing parameters: gain=$gain, time zero=$zero, horizontal boxcar filter window length=$bgrwin, vertical triangular FIR filter range=$filt MHz''')
 
-MCAPTION = Template('''Map of radar profile $fn in $location, collected $date.''')
+MCAPTION = Template('''Map of profile $fn in $location, collected $date.''')
 
 CLEAR = Template('''\\clearpage\n\n''')
 

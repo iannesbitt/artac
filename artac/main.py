@@ -15,35 +15,41 @@ def getparams(parampath):
         return json.load(paramfile)
 
 
-def process(ifn, ofn, gain, dpi=150, method='subprocess'):
+def process(ifn, ofn, projects, p, dpi=150, figsize=7, method='subprocess'):
     '''
     Call the process with the desired flags.
     Flags are detailed here:
     https://readgssi.readthedocs.io/en/latest/general.html#bash-usage
     '''
+    freqrange = '%s-%s' % (projects[p]['freqmin'], projects[p]['freqmax'])
     if method == 'subprocess':
+        # these will produce the same result but the python one is neater
         subprocess.call(['readgssi',
-                         '-i', '%s' % ifn,  # input file
-                         '-g', '%s' % gain, # gain
-                         '-o', '%s' % ofn,  # output file
-                         '-T',              # plot title off
-                         '-n',              # don't show plot window
-                         '-N',              # distance normalization
-                         '-Z', '233',       # time zero
-                         '-s', 'auto',      # stacking (auto)
-                         '-r', '75',        # boxcar noise removal
-                         '-t', '65-100',    # vertical triangular FIR filter
-                         '-p', '10',        # plot 10 inches wide
-                         '-d', '%s' % dpi,  # dots per inch
-                         '-x', 'm',         # x axis units
-                         '-z', 'ns',        # z axis units
+                         '-i', '%s' % ifn,                  # input file
+                         '-o', '%s' % ofn,                  # output file
+                         '-g', '%s' % projects[p]['gain'],  # gain
+                         '-T',                              # plot title off
+                         '-n',                              # don't show plot window
+                         '-N',                              # distance normalization
+                         '-Z', '%s' % projects[p]['zero'],  # time zero
+                         '-s', 'auto',                      # stacking (auto)
+                         '-r', '%s' % projects[p]['bgrwin'],# boxcar noise removal
+                         '-t', '%s' % freqrange,            # vertical triangular FIR filter
+                         '-p', '%s' % figsize,              # plot 7 inches wide
+                         '-d', '%s' % dpi,                  # dots per inch
+                         '-x', 'm',                         # x axis units
+                         '-z', 'ns',                        # z axis units
                          ])
     else:
-        readgssi(infile=ifn, outfile=ofn, gain=gain, dpi=dpi,
-                 plotting=True, figsize=10, title=False,
-                 stack='auto', x='m', z='ns', zero=[233,0,0,0],
-                 noshow=True, normalize=True, bgr=True, win=75,
-                 freqmax=100, freqmin=65, verbose=False, frmt='png')
+        readgssi(infile=ifn, outfile=ofn, gain=projects[p]['gain'],
+                 dpi=dpi, stack='auto', x='m', z='ns',
+                 plotting=True, figsize=7, title=False,
+                 zero=[projects[p]['zero'],None,None,None],
+                 noshow=True, normalize=True, bgr=True,
+                 win=projects[p]['bgrwin'],
+                 freqmin=projects[p]['freqmin'],
+                 freqmax=projects[p]['freqmax'],
+                 verbose=False, frmt='png')
 
 
 def assemble(projects, p, fn, outparams):
@@ -127,7 +133,12 @@ def texput(part, out, projects=None, p=None, fn=None, mfn=None):
         pfn = '%s/%s.png' % (out['figdir'], fn)
         caption = PCAPTION.substitute(fn=fn,
                                       date=projects[p]['date'],
-                                      location=projects[p]['location'])
+                                      location=projects[p]['location'],
+                                      gain=projects[p]['gain'],
+                                      zero=projects[p]['zero'],
+                                      bgrwin=projects[p]['bgrwin'],
+                                      filt='%s-%s' % (projects[p]['freqmin'],
+                                                      projects[p]['freqmax']))
         write(texf=texf, st=FIGURE.substitute(fn=fn, pfn=pfn, caption=caption))
     if part == "map":
         caption = MCAPTION.substitute(fn=fn,
@@ -186,7 +197,7 @@ def run(parampath):
                                                             projects[p]['subdir'],
                                                             os.path.basename(ifn))),
                                                             color='blue')
-                process(ifn=ifn, ofn=ofn, gain=projects[p]["gain"],
+                process(ifn=ifn, ofn=ofn, projects=projects, p=p,
                         dpi=outparams['dpi'], method='function')
             except UnicodeDecodeError as e:
                 printM('%s from readgssi:\n%s' % (type(e).__name__, e), color='red')
