@@ -1,4 +1,5 @@
 import os, sys, glob
+import re
 import subprocess
 import json
 from .texstrings import CHAPTER, PCAPTION, MCAPTION, SECTION, SUBSECTION, FIGURE, CLEAR, END
@@ -108,6 +109,27 @@ def testparams(projects, outparams):
     return chal, ip, ipf, projects
 
 
+def tex_escape(text):
+    """
+    From https://stackoverflow.com/a/25875504/4648080:
+
+        :param text: a plain text message
+        :return: the message escaped to appear correctly in LaTeX
+    """
+    conv = {
+        '&': r'\&',
+        '$': r'\$',
+        '#': r'\#',
+        '_': r'\_',
+        '~': r'\textasciitilde{}',
+        '^': r'\^{}',
+        '<': r'\textless{}',
+        '>': r'\textgreater{}',
+    }
+    regex = re.compile('|'.join(re.escape(str(key)) for key in sorted(conv.keys(), key = lambda item: - len(item))))
+    return regex.sub(lambda match: conv[match.group()], text)
+
+
 def write(texf, st, append=True):
     '''
     Write the formatted LaTeX string to a file.
@@ -124,12 +146,12 @@ def texput(part, out, projects=None, p=None, fn=None, mfn=None):
     texf=texf = os.path.join(out['dir'], out['texfile'])
 
     if part == "chapter":
-        write(texf=texf, st=CHAPTER.substitute(), append=False)
+        write(texf=texf, st=tex_escape(CHAPTER.substitute()), append=False)
     if part == "section":
-        write(texf=texf, st=SECTION.substitute(date=projects[p]['date'],
-                                         location=projects[p]['location']))
+        write(texf=texf, st=tex_escape(SECTION.substitute(date=projects[p]['date'],
+                                         location=projects[p]['location'])))
     if part == "subsection":
-        write(texf=texf, st=SUBSECTION.substitute(fn=fn))
+        write(texf=texf, st=tex_escape(SUBSECTION.substitute(fn=fn)))
     if part == "profile":
         pfn = '%s/%s.png' % (out['figdir'], fn)
         caption = PCAPTION.substitute(fn=fn,
@@ -140,16 +162,18 @@ def texput(part, out, projects=None, p=None, fn=None, mfn=None):
                                       bgrwin=projects[p]['bgrwin'],
                                       filt='%s-%s' % (projects[p]['freqmin'],
                                                       projects[p]['freqmax']))
-        write(texf=texf, st=FIGURE.substitute(fn=fn, pfn=pfn, caption=caption))
+        write(texf=texf, st=FIGURE.substitute(fn=fn, pfn=pfn,
+                                              caption=tex_escape(caption)))
     if part == "map":
         caption = MCAPTION.substitute(fn=fn,
                                       date=projects[p]['date'],
                                       location=projects[p]['location'])
-        write(texf=texf, st=FIGURE.substitute(fn=fn, pfn=mfn, caption=caption))
+        write(texf=texf, st=FIGURE.substitute(fn=fn+'-map', pfn=mfn,
+                                              caption=tex_escape(caption)))
     if part == "clear":
-        write(texf=texf, st=CLEAR.substitute())
+        write(texf=texf, st=tex_escape(CLEAR.substitute()))
     if part == "end":
-        write(texf=texf, st=END.substitute())
+        write(texf=texf, st=tex_escape(END.substitute()))
 
 
 def starttex(outparams):
@@ -224,11 +248,11 @@ def run(parampath):
             texput('subsection', out=outparams, fn=ffn, projects=projects, p=p)
             texput('profile', out=outparams, fn=ffn, projects=projects, p=p)
             texput('map', out=outparams, fn=ffn, mfn=mfn, projects=projects, p=p)
+            texput('clear', out=outparams)
 
             i += 1
             printM("%s/%s files processed (project %s of %s)" % (i, nf, ip, np))
 
-        texput('clear', out=outparams)
         printM('%s/%s projects done (finished with "%s")' % (ip, np, p), color='purple')
     
     texput('end', out=outparams)
