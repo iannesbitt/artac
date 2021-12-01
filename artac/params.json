@@ -19,7 +19,7 @@
             "location": "Kingsbury Pond (Kingsbury Plantation, ME)"
         },
         "20180303-kingsbury": {
-            "gain": 10,
+            "gain": 30,
             "zero": 233,
             "bgrwin": 75,
             "freqmin": 65,
@@ -43,7 +43,7 @@
             "location": "Mayfield Pond, Mayfield Corner, ME"
         },
         "20171001-llp": {
-            "gain": 100,
+            "gain": 30,
             "zero": 233,
             "bgrwin": 75,
             "freqmin": 65,
@@ -55,7 +55,7 @@
             "location": "Little Long Pond, Seal Harbor, ME"
         },
         "20171001-tarn": {
-            "gain": 100,
+            "gain": 50,
             "zero": 233,
             "bgrwin": 75,
             "freqmin": 65,
@@ -67,7 +67,7 @@
             "location": "The Tarn, Bar Harbor, ME"
         },
         "20180201-mud": {
-            "gain": 100,
+            "gain": 50,
             "zero": 233,
             "bgrwin": 75,
             "freqmin": 65,
@@ -77,30 +77,6 @@
             "subdir": "working/gpr",
             "date": "2017-10-01",
             "location": "Mud Pond, Old Town, ME"
-        },
-        "20180208-cariboubog": {
-            "gain": 100,
-            "zero": 233,
-            "bgrwin": 75,
-            "freqmin": 65,
-            "freqmax": 100,
-            "flist": [77,78,79],
-            "path": "/home/iannesbitt/MASTERS/fieldwork",
-            "subdir": "working/gpr",
-            "date": "2018-02-08",
-            "location": "Caribou Bog, Old Town, ME"
-        },
-        "20180209-schoonerhead": {
-            "gain": 10,
-            "zero": 233,
-            "bgrwin": 75,
-            "freqmin": 65,
-            "freqmax": 100,
-            "flist": [1,2,3,4,5,6,7,8],
-            "path": "/home/iannesbitt/MASTERS/fieldwork",
-            "subdir": "working/gpr",
-            "date": "2018-02-09",
-            "location": "Schooner Head Meadow, Bar Harbor, ME"
         },
         "20180209-tarn": {
             "gain": 10,
@@ -115,7 +91,7 @@
             "location": "The Tarn, Bar Harbor, ME"
         },
         "20170803-bear": {
-            "gain": 100,
+            "gain": 200,
             "zero": 233,
             "bgrwin": 75,
             "freqmin": 65,
