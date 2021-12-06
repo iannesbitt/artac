@@ -181,5 +181,6 @@ def drawmap(ifn, ffn, out, projects, p):
     printM('Saving figure as %s' % figpath, color='blue')
     plt.tight_layout()
     plt.savefig(figpath)
+    plt.close('all')
 
     return mfn
