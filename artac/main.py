@@ -43,7 +43,7 @@ def process(ifn, ofn, projects, p, dpi=150, figsize=5, method='subprocess'):
                          ])
     else:
         readgssi(infile=ifn, outfile=ofn, gain=projects[p]['gain'],
-                 dpi=dpi, stack='auto', x='m', z='ns',
+                 dpi=dpi, stack='auto', x='m', z='nanoseconds',
                  plotting=True, figsize=5, title=False,
                  zero=[projects[p]['zero'],None,None,None],
                  noshow=True, normalize=True, bgr=True,
