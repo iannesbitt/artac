@@ -2,7 +2,7 @@ import os, sys, glob
 import re
 import subprocess
 import json
-from .texstrings import CHAPTER, PCAPTION, MCAPTION, SECTION, SUBSECTION, FIGURE, CLEAR, END
+from .texstrings import CHAPTER, PCAPTION, MCAPTION, SECTION, SUBSECTION, FIGURE, FILTER, CLEAR, END
 from .mapping import drawmap
 from . import printM
 from readgssi.readgssi import readgssi
@@ -125,6 +125,7 @@ def tex_escape(text):
         '^': r'\^{}',
         '<': r'\textless{}',
         '>': r'\textgreater{}',
+        '--': r'\textendash{}',
     }
     regex = re.compile('|'.join(re.escape(str(key)) for key in sorted(conv.keys(), key = lambda item: - len(item))))
     return regex.sub(lambda match: conv[match.group()], text)
@@ -160,8 +161,8 @@ def texput(part, out, projects=None, p=None, fn=None, mfn=None):
                                       gain=projects[p]['gain'],
                                       zero=projects[p]['zero'],
                                       bgrwin=projects[p]['bgrwin'],
-                                      filt='%s-%s' % (projects[p]['freqmin'],
-                                                      projects[p]['freqmax']))
+                                      filt=FILTER.substitute(fmin=projects[p]['freqmin'],
+                                                             fmax=projects[p]['freqmax']))
         write(texf=texf, st=FIGURE.substitute(fn=fn, pfn=pfn,
                                               caption=tex_escape(caption)))
     if part == "map":

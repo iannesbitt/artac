@@ -16,6 +16,8 @@ PCAPTION = Template('''Radar profile $fn in $location. Profile collected $date. 
 
 MCAPTION = Template('''Map of profile $fn in $location, collected $date.''')
 
+FILTER = Template('''$fmin--$fmax''')
+
 CLEAR = Template('''\\clearpage\n''')
 
 END = Template('''\\endinput\n''')
