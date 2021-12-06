@@ -42,54 +42,6 @@
             "date": "2019-03-09",
             "location": "Mayfield Pond, Mayfield Corner, ME"
         },
-        "20171001-llp": {
-            "gain": 30,
-            "zero": 233,
-            "bgrwin": 75,
-            "freqmin": 65,
-            "freqmax": 100,
-            "flist": [65,66,67,68,69,70,71,72],
-            "path": "/home/iannesbitt/MASTERS/fieldwork",
-            "subdir": "working/gpr",
-            "date": "2017-10-01",
-            "location": "Little Long Pond, Seal Harbor, ME"
-        },
-        "20171001-tarn": {
-            "gain": 50,
-            "zero": 233,
-            "bgrwin": 75,
-            "freqmin": 65,
-            "freqmax": 100,
-            "flist": [53,54,55,56,57,58,59,60,61,62,63,64],
-            "path": "/home/iannesbitt/MASTERS/fieldwork",
-            "subdir": "working/gpr",
-            "date": "2017-10-01",
-            "location": "The Tarn, Bar Harbor, ME"
-        },
-        "20180201-mud": {
-            "gain": 50,
-            "zero": 233,
-            "bgrwin": 75,
-            "freqmin": 65,
-            "freqmax": 100,
-            "flist": [74,75,76],
-            "path": "/home/iannesbitt/MASTERS/fieldwork",
-            "subdir": "working/gpr",
-            "date": "2017-10-01",
-            "location": "Perch Pond, Old Town, ME"
-        },
-        "20180209-tarn": {
-            "gain": 10,
-            "zero": 233,
-            "bgrwin": 75,
-            "freqmin": 65,
-            "freqmax": 100,
-            "flist": [80,81,83,84,85,86,87,89,90,91],
-            "path": "/home/iannesbitt/MASTERS/fieldwork",
-            "subdir": "working/gpr",
-            "date": "2018-02-09",
-            "location": "The Tarn, Bar Harbor, ME"
-        },
         "20170803-bear": {
             "gain": 200,
             "zero": 233,
@@ -137,6 +89,54 @@
             "subdir": "working/gpr",
             "date": "2017-08-04",
             "location": "Upper Cold Stream Pond (east basin), Lincoln, ME"
+        },
+        "20171001-tarn": {
+            "gain": 50,
+            "zero": 233,
+            "bgrwin": 75,
+            "freqmin": 65,
+            "freqmax": 100,
+            "flist": [53,54,55,56,57,58,59,60,61,62,63,64],
+            "path": "/home/iannesbitt/MASTERS/fieldwork",
+            "subdir": "working/gpr",
+            "date": "2017-10-01",
+            "location": "The Tarn, Bar Harbor, ME"
+        },
+        "20180209-tarn": {
+            "gain": 10,
+            "zero": 233,
+            "bgrwin": 75,
+            "freqmin": 65,
+            "freqmax": 100,
+            "flist": [80,81,83,84,85,86,87,89,90,91],
+            "path": "/home/iannesbitt/MASTERS/fieldwork",
+            "subdir": "working/gpr",
+            "date": "2018-02-09",
+            "location": "The Tarn, Bar Harbor, ME"
+        },
+        "20171001-llp": {
+            "gain": 30,
+            "zero": 233,
+            "bgrwin": 75,
+            "freqmin": 65,
+            "freqmax": 100,
+            "flist": [65,66,67,68,69,70,71,72],
+            "path": "/home/iannesbitt/MASTERS/fieldwork",
+            "subdir": "working/gpr",
+            "date": "2017-10-01",
+            "location": "Little Long Pond, Seal Harbor, ME"
+        },
+        "20180201-mud": {
+            "gain": 50,
+            "zero": 233,
+            "bgrwin": 75,
+            "freqmin": 65,
+            "freqmax": 100,
+            "flist": [74,75,76],
+            "path": "/home/iannesbitt/MASTERS/fieldwork",
+            "subdir": "working/gpr",
+            "date": "2017-10-01",
+            "location": "Perch Pond, Old Town, ME"
         }
     }
 }
